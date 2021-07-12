@@ -1,18 +1,18 @@
 import time
 import random
 import math
-from pykafka import KafkaClient
+from pykafka import KafkaClient # pykafka
 import json
 
 i = 1
 j = 1
 kafka_client = KafkaClient(hosts="localhost:9092")
 
-kafka_topic1 = kafka_client.topics['coords']
-kafka_producer1 = kafka_topic1.get_sync_producer()
+kafka_topic = kafka_client.topics['coords']
+kafka_producer_xyz = kafka_topic.get_sync_producer()
 
-kafka_topic2 = kafka_client.topics['temperature']
-kafka_producer2 = kafka_topic2.get_sync_producer()
+kafka_topic = kafka_client.topics['temperature']
+kafka_producer_t = kafka_topic.get_sync_producer()
 
 while True:
 	# print(random.random())\
@@ -31,10 +31,10 @@ while True:
 
 	if random.random() > 0.5:
 		msg = json.dumps({"x": x, "y": y, "z": z})
-		kafka_producer1.produce(msg.encode('ascii'))
+		kafka_producer_xyz.produce(msg.encode('ascii'))
 
 	else:
 		msg = json.dumps({"temperature": temp})
-		kafka_producer2.produce(msg.encode('ascii'))
+		kafka_producer_t.produce(msg.encode('ascii'))
 
-	print("Send: " + msg)
+	print('Send: ' + msg)
