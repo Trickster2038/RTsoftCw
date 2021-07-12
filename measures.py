@@ -17,8 +17,8 @@ kafka_producer_t = kafka_topic.get_sync_producer()
 while True:
 
 	x = random.gauss(5, 1)
-	y = random.gauss(10, 0.5)
-	z = random.gauss(-7, 2)
+	y = random.gauss(-7, 1)
+	z = random.gauss(10, 2)
 	temp = random.gauss(50, 4) - math.sqrt(215 / i)
 	# pressure = random.gauss(100, 4) + 1.5 * j
 	
