@@ -5,7 +5,7 @@ from pykafka import KafkaClient # pykafka
 import json
 
 i = 1
-j = 1
+
 kafka_client = KafkaClient(hosts="localhost:9092")
 
 kafka_topic = kafka_client.topics['coords']
@@ -14,28 +14,46 @@ kafka_producer_xyz = kafka_topic.get_sync_producer()
 kafka_topic = kafka_client.topics['temperature']
 kafka_producer_t = kafka_topic.get_sync_producer()
 
+kafka_topic = kafka_client.topics['electrical']
+kafka_producer_e = kafka_topic.get_sync_producer()
+
+kafka_topic = kafka_client.topics['generator']
+kafka_producer_g = kafka_topic.get_sync_producer()
+
 print("Generator loop init")
 
 while True:
 
-	x = random.gauss(5, 1)
-	y = random.gauss(-7, 0.1) + i / 200
-	z = random.gauss(20, 4) 
-	temp = random.gauss(50, 4) - math.sqrt(215 / i)
-	# pressure = random.gauss(100, 4) + 1.5 * j
+	to_send = random.randint(0, 3)
 
-	if random.random() > 0.5:
+	if to_send == 0:
+		vol = round(random.uniform(730,790), 3)
+		cur = round(random.gauss(100,5), 3)
+		res = 200 + round(random.random() - 0.5, 3)
+		msg = json.dumps({"voltage": vol, "current": cur, "resistance": res})
+		kafka_producer_e.produce(msg.encode('ascii'))
+
+	elif to_send == 1:
+		x = round(random.gauss(5, 1), 3)
+		y = round(random.gauss(-7, 0.1) + i / 200, 3)
+		z = round(random.gauss(20, 4), 3)
 		msg = json.dumps({"x": x, "y": y, "z": z})
 		kafka_producer_xyz.produce(msg.encode('ascii'))
 
-	else:
-		msg = json.dumps({"temperature": temp})
+	elif to_send == 2:
+		temp = round(random.gauss(50, 4) - math.sqrt(215 / i), 3)
+		press = round(random.normalvariate(100 + i / 10, 3), 3)
+		hum = random.randint(40, 50)
+		msg = json.dumps({"temperature": temp, "pressure": press, "humidity": hum})
 		kafka_producer_t.produce(msg.encode('ascii'))
 
+	elif to_send == 3:
+		freq = round(47 + random.random() * 5, 3)
+		power = round(random.uniform(5.2, 5.8), 3)
+		noise = random.randint(66, 80)
+		msg = json.dumps({"frequency": freq, "power": power, "noise": noise})
+		kafka_producer_g.produce(msg.encode('ascii'))
+
 	i += 0.5
-	if j < 50:
-		j += 0.5
 		
 	time.sleep(0.05)
-
-	# print('Send: ' + msg)
