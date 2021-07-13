@@ -1,6 +1,22 @@
 import time
 from opcua import Client
 from influxdb import InfluxDBClient
+from datetime import datetime
+
+def upd_log_ok(log_file, values, headers):
+  variables = ''
+  for i in range(len(values)):
+    to_add = "'" + headers[i] + "': " + str(values[i])
+    variables += to_add
+    if i != len(values) - 1:
+      variables += ", "
+    pass
+  log_file.write(f"[{datetime.now()}] OPC UA variables {variables} were read and stored into InfluxDB.\n")
+
+def upd_log_fail(log_file):
+  log_file.write(f"[{datetime.now()}] Failed to store OPC UA variables into InfluxDB.\n")
+
+log_file = open("logs/client.log", "w")
 
 db_client = InfluxDBClient(host='localhost', port=8086)
 db_client.create_database('opcdata')
@@ -63,7 +79,10 @@ if __name__ == "__main__":
         }
          ]
 
-      flag = db_client.write_points(json_body)
+      if db_client.write_points(json_body):
+        upd_log_ok(log_file, [x, y, z], ['x', 'y', 'z'])
+      else:
+        upd_log_fail(log_file)
 
       json_body = [
         {
@@ -76,7 +95,10 @@ if __name__ == "__main__":
         }
          ]
 
-      flag = db_client.write_points(json_body)
+      if db_client.write_points(json_body):
+        upd_log_ok(log_file, [t, p, h], ['temperature', 'pressuer', 'humidity'])
+      else:
+        upd_log_fail(log_file)
 
       json_body = [
         {
@@ -89,7 +111,10 @@ if __name__ == "__main__":
         }
          ]
 
-      flag = db_client.write_points(json_body)
+      if db_client.write_points(json_body):
+        upd_log_ok(log_file, [v, c, r], ['voltage', 'current', 'resistance'])
+      else:
+        upd_log_fail(log_file)
 
       json_body = [
         {
@@ -102,6 +127,9 @@ if __name__ == "__main__":
         }
          ]
 
-      flag = db_client.write_points(json_body)
+      if db_client.write_points(json_body):
+        upd_log_ok(log_file, [f, po, n], ['frequency', 'power', 'noise'])
+      else:
+        upd_log_fail(log_file)
        
       time.sleep(0.05)

@@ -3,6 +3,12 @@ import json
 import time
 from opcua import Server
 from opcua.ua import VariantType
+from datetime import datetime
+
+def upd_log(log_file, msg):
+    log_file.write(f"[{datetime.now()}] Message {msg} was received and converted into OPC UA variables.\n")
+
+log_file = open("logs/converter.log", "w")
 
 URL = "opc.tcp://0.0.0.0:4840"
 
@@ -53,20 +59,24 @@ while True:
             x_metric.set_value(msg_json["x"], varianttype = VariantType.Double)
             y_metric.set_value(msg_json["y"], varianttype = VariantType.Double)
             z_metric.set_value(msg_json["z"], varianttype = VariantType.Double)
+            upd_log(log_file, message_val)
 
         elif message.topic == 'temperature':
             t_metric.set_value(msg_json["temperature"], varianttype = VariantType.Double)
             p_metric.set_value(msg_json["pressure"], varianttype = VariantType.Double)
             h_metric.set_value(msg_json["humidity"], varianttype = VariantType.Double)
+            upd_log(log_file, message_val)
             
         elif message.topic == 'electrical':
             v_metric.set_value(msg_json["voltage"], varianttype = VariantType.Double)
             c_metric.set_value(msg_json["current"], varianttype = VariantType.Double)
             r_metric.set_value(msg_json["resistance"], varianttype = VariantType.Double)
+            upd_log(log_file, message_val)
 
         elif message.topic == 'generator':
             f_metric.set_value(msg_json["frequency"], varianttype = VariantType.Double)
             po_metric.set_value(msg_json["power"], varianttype = VariantType.Double)
             n_metric.set_value(msg_json["noise"], varianttype = VariantType.Double)
+            upd_log(log_file, message_val)
 
     time.sleep(0.05)
