@@ -41,7 +41,22 @@
 
 ## Общий порядок установки
 
-- установить необходимые библиотеки через pip
-- запустить сервисы kafka, indluxDB и grafana с настройками по умолчанию
-- запустить measures.py, converter.py, client.py
-- настроить Grafana
+- Установить необходимые библиотеки через pip:
+  ```
+  $ pip install pykafka
+  $ pip install kafka
+  $ pip install freeopcua
+  $ pip install opcua-client
+  $ pip install influxdb
+  ```
+- Запустить сервисы Kafka, IndluxDB и Grafana с настройками по умолчанию:
+  ```
+  $ sudo systemctl start kafka
+  ```
+- Запустить measures.py, converter.py, client.py:
+  ```
+  $ python3 measures.py
+  $ python3 converter.py
+  $ python3 client.py
+  ```
+- Настроить Grafana.
